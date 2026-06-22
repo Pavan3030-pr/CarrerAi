@@ -1,6 +1,7 @@
 package com.carrerai.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import com.carrerai.dto.InterviewRequest;
 import com.carrerai.dto.ProfileRequest;
@@ -9,11 +10,25 @@ import com.carrerai.model.CareerPlanResponse;
 import com.carrerai.model.InterviewFeedback;
 import com.carrerai.model.ResumeAnalysis;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class CareerAiServiceTest {
 
-  private final CareerAiService service = new CareerAiService();
+  @Mock
+  private GeminiService gemini;
+  private CareerAiService service;
+
+  @BeforeEach
+  void setUp() {
+    // Gemini returns null (not available), so tests exercise the mock fallback
+    when(gemini.isAvailable()).thenReturn(false);
+    service = new CareerAiService(gemini);
+  }
 
   @Test
   void buildPlan_returnsReadinessScore() {

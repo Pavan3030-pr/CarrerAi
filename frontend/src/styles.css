@@ -97,6 +97,160 @@ nav a:hover {
   color: white;
 }
 
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-user strong {
+  display: block;
+  font-size: 14px;
+}
+
+.sidebar-user span {
+  display: block;
+  color: #b7c3d3;
+  font-size: 12px;
+}
+
+.user-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0f9f9a;
+  flex-shrink: 0;
+}
+
+.user-logout {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: #b7c3d3;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+}
+
+.user-logout:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.auth-btn {
+  flex: 1;
+  min-height: 36px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.auth-btn.secondary {
+  margin-top: 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #d9e2ee;
+}
+
+.auth-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+}
+
+/* Auth modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.modal-close:hover {
+  background: #f0f2f5;
+  color: var(--ink);
+}
+
+.auth-modal h2 {
+  margin-bottom: 6px;
+  font-size: 22px;
+}
+
+.auth-subtitle {
+  color: var(--muted);
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+
+.auth-modal form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-modal form label {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.auth-error {
+  color: var(--red);
+  font-size: 13px;
+  margin: 0;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.auth-switch {
+  text-align: center;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.auth-switch a {
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
 .sidebar-proof {
   margin-top: auto;
   display: flex;
