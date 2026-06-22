@@ -159,22 +159,30 @@ function App() {
     }
   }
 
-  // Scroll to section when switching to dashboard view
-  useEffect(() => {
-    if (view === 'dashboard' && pendingScroll) {
-      requestAnimationFrame(() => {
-        scrollToSection(pendingScroll);
-        setPendingScroll('');
-      });
-    }
-  }, [view]);
+  // Demo mode constants
+  const DEMO_PROFILE = {
+    name: 'Pavan Sai',
+    degree: 'B.Tech CSE',
+    targetRole: 'Java Full Stack Developer',
+    experienceLevel: 'Student',
+    skills: 'Java, Spring Boot, React, SQL, Git',
+    interests: 'AI, Web development, Placement preparation',
+  };
+  const DEMO_RESUME = 'Java full stack developer with Spring Boot, React, SQL and REST API projects. Built a placement preparation platform and improved dashboard tracking by 30%. Designed and deployed REST APIs for assessment, resume analysis, interview feedback, and personalized roadmaps. Owned the full-stack development lifecycle from requirements to deployment.';
+  const DEMO_INTERVIEW = 'In my recent project, I built REST APIs with Spring Boot and connected them to a React frontend. The situation was challenging because we had to deliver a working prototype in 48 hours. My task was to own the backend architecture and API design. I took action by designing modular REST endpoints, implementing JWT authentication, and integrating the Gemini AI API for intelligent scoring. The result was a fully functional demo with authentication, career planning, resume analysis, and interview coaching that judges could interact with in real time.';
 
-  const [pendingScroll, setPendingScroll] = useState('');
+  // Demo mode
+  const [demoMode, setDemoMode] = useState(false);
 
-  function navigateToSection(sectionId) {
-    setPendingScroll(sectionId);
-    setView('dashboard');
+  function loadDemoData() {
+    setDemoMode(true);
+    setProfile(DEMO_PROFILE);
+    setResumeText(DEMO_RESUME);
+    setInterviewAnswer(DEMO_INTERVIEW);
+    // Scroll to top after filling
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
 
   // Feature handlers - NO fallback data, errors displayed to user
   async function generatePlan() {
@@ -292,13 +300,23 @@ function App() {
         <>
         <header className="topbar">
           <div>
-            <p className="eyebrow">Hackathon MVP {user ? `· ${user.name}` : ''}</p>
+            <p className="eyebrow">Hackathon MVP {user ? `· ${user.name}` : ''} {demoMode ? '· 🎯 Demo Mode' : ''}</p>
             <h1>One platform for assessment, gaps, roadmap, resume, interview, and readiness.</h1>
           </div>
-          <button className="primary" onClick={generatePlan} disabled={loading === '/career-plan'}>
-            <Rocket size={18} />
-            {loading === '/career-plan' ? 'Generating...' : 'Generate AI Plan'}
-          </button>
+          <div className="topbar-actions">
+            <button
+              className={`demo-toggle ${demoMode ? 'active' : ''}`}
+              onClick={loadDemoData}
+              title="Pre-fill all fields with demo data for a quick walkthrough"
+            >
+              <Sparkles size={16} />
+              {demoMode ? '✨ Demo Loaded' : '🎯 Demo Mode'}
+            </button>
+            <button className="primary" onClick={generatePlan} disabled={loading === '/career-plan'}>
+              <Rocket size={18} />
+              {loading === '/career-plan' ? 'Generating...' : 'Generate AI Plan'}
+            </button>
+          </div>
         </header>
 
         {/* Auth modal */}

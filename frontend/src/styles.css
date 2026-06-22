@@ -276,6 +276,43 @@ nav a:hover {
   margin-bottom: 22px;
 }
 
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.demo-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 43px;
+  padding: 0 14px;
+  border: 2px dashed #d8dee8;
+  border-radius: 8px;
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.demo-toggle:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: #f0fdfa;
+}
+
+.demo-toggle.active {
+  border-style: solid;
+  border-color: var(--teal);
+  background: #f0fdfa;
+  color: var(--teal);
+}
+
 .eyebrow {
   margin: 0 0 7px;
   color: var(--teal);
