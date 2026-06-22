@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   Activity,
@@ -28,16 +28,6 @@ import './styles.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
-const defaultPlan = {
-  readinessScore: 64,
-  careerMatches: [{ role: 'Java Full Stack Developer', fit: 87, reason: 'Best match for Spring, REST, React, and SQL skills.' }, { role: 'Backend Engineer', fit: 78, reason: 'Strong path for APIs, services, and databases.' }, { role: 'Cloud Engineer', fit: 61, reason: 'Future path after strengthening deployments.' }],
-  skillGaps: [{ skill: 'Java', readiness: 82, priority: 'Ready', recommendation: 'Use this as a resume strength.' }, { skill: 'Spring Boot', readiness: 72, priority: 'Ready', recommendation: 'Build one deployed API project.' }, { skill: 'React', readiness: 65, priority: 'Improve', recommendation: 'Create a polished dashboard.' }, { skill: 'DSA', readiness: 44, priority: 'Critical', recommendation: 'Practice arrays, strings, and trees.' }, { skill: 'Cloud', readiness: 46, priority: 'Critical', recommendation: 'Deploy one project publicly.' }],
-  roadmap: [{ week: 1, focus: 'Career baseline', actions: ['Finish assessment', 'Pick target roles'], proofOfWork: 'Saved profile' }, { week: 2, focus: 'Core skill gaps', actions: ['Practice DSA', 'Revise SQL'], proofOfWork: 'Gap score +10' }, { week: 3, focus: 'Project proof', actions: ['Build feature', 'Deploy demo'], proofOfWork: 'GitHub link' }, { week: 4, focus: 'Resume sprint', actions: ['Rewrite bullets', 'Add metrics'], proofOfWork: 'ATS 75+' }],
-  nextActions: ['Complete week 1', 'Improve DSA', 'Run mock interview'],
-};
-
-const demoResume = 'Java full stack developer with Spring Boot, React, SQL and REST API projects. Built a placement preparation platform and improved dashboard tracking by 30%.';
-
 function App() {
   // View state
   const [view, setView] = useState('dashboard');
@@ -65,17 +55,17 @@ function App() {
 
   // Profile & app state
   const [profile, setProfile] = useState({
-    name: 'Pavan Sai', degree: 'B.Tech CSE', targetRole: 'Java Full Stack Developer',
-    experienceLevel: 'Student', skills: 'Java, Spring Boot, React, SQL, Git',
-    interests: 'AI, Web development, Placement preparation',
+    name: '', degree: '', targetRole: '',
+    experienceLevel: 'Student', skills: '',
+    interests: '',
   });
-  const [plan, setPlan] = useState(defaultPlan);
-  const [resumeText, setResumeText] = useState(demoResume);
+  const [plan, setPlan] = useState(null);
+  const [resumeText, setResumeText] = useState('');
   const [resume, setResume] = useState(null);
-  const [interviewAnswer, setInterviewAnswer] = useState(
-    'In my recent project, I built REST APIs with Spring Boot and connected them to a React frontend. I owned the dashboard module and improved the demo flow for users.');
+  const [interviewAnswer, setInterviewAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState('');
+  const [apiError, setApiError] = useState('');
 
   // Update profile name when user logs in
   useEffect(() => {
@@ -85,28 +75,37 @@ function App() {
   }, [user]);
 
   const modules = useMemo(() => [
-    { icon: BrainCircuit, label: 'AI Career Profiling', value: `${plan.careerMatches[0]?.fit || 0}% role fit` },
-    { icon: Target, label: 'Skill-Gap Matrix', value: `${plan.skillGaps.filter(g => g.readiness < 70).length} gaps found` },
-    { icon: Map, label: 'AI Roadmap', value: `${plan.roadmap.length} weeks planned` },
-    { icon: FileText, label: 'Resume Intelligence', value: resume ? `${resume.atsScore} ATS` : 'Ready' },
-    { icon: MessageSquareText, label: 'Mock Interview AI', value: feedback ? `${feedback.score}/100` : 'Practice' },
-    { icon: Gauge, label: 'Live Readiness Score', value: `${plan.readinessScore}/100` },
+    { icon: BrainCircuit, label: 'AI Career Profiling', value: plan ? `${plan.careerMatches[0]?.fit || 0}% role fit` : '—', sectionId: 'ai-career-profiling' },
+    { icon: Target, label: 'Skill-Gap Matrix', value: plan ? `${plan.skillGaps.filter(g => g.readiness < 70).length} gaps found` : '—', sectionId: 'skill-gap-matrix' },
+    { icon: Map, label: 'AI Roadmap', value: plan ? `${plan.roadmap.length} weeks planned` : '—', sectionId: 'ai-roadmap' },
+    { icon: FileText, label: 'Resume Intelligence', value: resume ? `${resume.atsScore} ATS` : '—', sectionId: 'resume-intelligence' },
+    { icon: MessageSquareText, label: 'Mock Interview AI', value: feedback ? `${feedback.score}/100` : '—', sectionId: 'mock-interview-ai' },
+    { icon: Gauge, label: 'Live Readiness Score', value: plan ? `${plan.readinessScore}/100` : '—', sectionId: 'live-readiness-score' },
   ], [feedback, plan, resume]);
 
-  // API helper with auth token
-  async function post(path, body, fallback) {
+  function scrollToSection(sectionId) {
+    const el = document.getElementById(sectionId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // API helper with auth token - NO fallback, surfaces errors
+  async function post(path, body) {
     setLoading(path);
+    setApiError('');
     try {
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
       const response = await fetch(`${API_BASE}${path}`, {
         method: 'POST', headers, body: JSON.stringify(body),
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.error || `Server error (${response.status}) — make sure the backend is running`);
+      }
       return await response.json();
     } catch (error) {
-      console.warn(`Using local demo response for ${path}`, error);
-      return fallback;
+      setApiError(error.message);
+      throw error;
     } finally {
       setLoading('');
     }
@@ -160,37 +159,47 @@ function App() {
     }
   }
 
-  // Feature handlers
+  // Scroll to section when switching to dashboard view
+  useEffect(() => {
+    if (view === 'dashboard' && pendingScroll) {
+      requestAnimationFrame(() => {
+        scrollToSection(pendingScroll);
+        setPendingScroll('');
+      });
+    }
+  }, [view]);
+
+  const [pendingScroll, setPendingScroll] = useState('');
+
+  function navigateToSection(sectionId) {
+    setPendingScroll(sectionId);
+    setView('dashboard');
+  }
+
+  // Feature handlers - NO fallback data, errors displayed to user
   async function generatePlan() {
     const payload = {
       ...profile,
       skills: profile.skills.split(',').map(s => s.trim()).filter(Boolean),
       interests: profile.interests.split(',').map(i => i.trim()).filter(Boolean),
     };
-    const data = await post('/career-plan', payload, defaultPlan);
+    const data = await post('/career-plan', payload);
     setPlan(data);
+    setApiError('');
   }
 
   async function analyzeResume() {
-    const data = await post('/resume/analyze', { targetRole: profile.targetRole, resumeText }, {
-      atsScore: 78, contentScore: 82, impactScore: 74,
-      strengths: ['Technical keywords are visible', 'Project ownership is clear'],
-      fixes: ['Add more numbers', 'Add deployment link', 'Use stronger action verbs'],
-      rewriteSuggestions: ['Built a Spring Boot and React platform that improved career readiness tracking with real-time scoring.', 'Designed REST APIs for assessments, resume analysis, interview feedback, and personalized roadmaps.'],
-    });
+    const data = await post('/resume/analyze', { targetRole: profile.targetRole, resumeText });
     setResume(data);
+    setApiError('');
   }
 
   async function scoreInterview() {
     const data = await post('/interview/score', {
       targetRole: profile.targetRole, question: 'Tell me about your best full-stack project.', answer: interviewAnswer,
-    }, {
-      score: 71, question: 'Tell me about your best full-stack project.',
-      verdict: 'Strong answer. Add one metric and one tradeoff.',
-      coachingTips: ['Use STAR structure', 'Mention your exact contribution', 'Close with measurable impact'],
-      improvedAnswer: 'I built a full-stack career platform with Spring Boot and React, owned the dashboard and API flow, and delivered a judge-ready demo with scoring, roadmap, resume, and interview modules.',
     });
     setFeedback(data);
+    setApiError('');
   }
 
   // Admin data fetching
@@ -249,12 +258,13 @@ function App() {
         )}
 
         <nav>
-          <a href="#" onClick={e => { e.preventDefault(); setView('dashboard'); }} className={view === 'dashboard' ? 'active' : ''}>
+          <a href="#" onClick={e => { e.preventDefault(); setView('dashboard'); }} className={view === 'dashboard' && !window.location.hash ? 'active' : ''}>
             <BarChart3 size={18} />
             <span>Dashboard</span>
           </a>
-          {modules.map(({ icon: Icon, label }) => (
-            <a href={`#${label.toLowerCase().replaceAll(' ', '-')}`} key={label} onClick={e => { e.preventDefault(); setView('dashboard'); }}>
+          {modules.map(({ icon: Icon, label, sectionId }) => (
+            <a href={`#${sectionId}`} key={label}
+              onClick={e => { e.preventDefault(); navigateToSection(sectionId); }}>
               <Icon size={18} />
               <span>{label}</span>
             </a>
@@ -328,10 +338,18 @@ function App() {
           </div>
         )}
 
+        {/* API Error banner */}
+        {apiError && (
+          <div className="api-error-banner">
+            <span>⚠️ {apiError}</span>
+            <button onClick={() => setApiError('')} className="error-dismiss"><X size={16} /></button>
+          </div>
+        )}
+
         {/* Metrics */}
         <section className="metrics-grid" aria-label="Career modules">
-          {modules.map(({ icon: Icon, label, value }) => (
-            <article className="metric-card" key={label} id={label.toLowerCase().replaceAll(' ', '-')}>
+          {modules.map(({ icon: Icon, label, value, sectionId }) => (
+            <article className="metric-card" key={label}>
               <Icon size={21} />
               <span>{label}</span>
               <strong>{value}</strong>
@@ -346,94 +364,128 @@ function App() {
               <h2>Career Assessment</h2>
             </div>
             <div className="form-grid">
-              <label>Name<input value={profile.name} onChange={e => setProfile({ ...profile, name: e.target.value })} /></label>
-              <label>Degree<input value={profile.degree} onChange={e => setProfile({ ...profile, degree: e.target.value })} /></label>
-              <label>Target role<input value={profile.targetRole} onChange={e => setProfile({ ...profile, targetRole: e.target.value })} /></label>
+              <label>Name<input value={profile.name} onChange={e => setProfile({ ...profile, name: e.target.value })} placeholder="Your name" /></label>
+              <label>Degree<input value={profile.degree} onChange={e => setProfile({ ...profile, degree: e.target.value })} placeholder="B.Tech CSE" /></label>
+              <label>Target role<input value={profile.targetRole} onChange={e => setProfile({ ...profile, targetRole: e.target.value })} placeholder="Java Full Stack Developer" /></label>
               <label>Level<input value={profile.experienceLevel} onChange={e => setProfile({ ...profile, experienceLevel: e.target.value })} /></label>
-              <label className="wide">Skills (comma-separated)<input value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })} /></label>
-              <label className="wide">Interests (comma-separated)<input value={profile.interests} onChange={e => setProfile({ ...profile, interests: e.target.value })} /></label>
+              <label className="wide">Skills (comma-separated)<input value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })} placeholder="Java, Spring Boot, React, SQL, Git" /></label>
+              <label className="wide">Interests (comma-separated)<input value={profile.interests} onChange={e => setProfile({ ...profile, interests: e.target.value })} placeholder="AI, Web development" /></label>
             </div>
           </div>
 
-          <div className="panel readiness-panel">
-            <div className="score-ring" style={{ '--score': `${plan.readinessScore * 3.6}deg` }}>
-              <strong>{plan.readinessScore}</strong>
-              <span>Readiness</span>
-            </div>
-            <div>
-              <h2>Top Career Match</h2>
-              <h3>{plan.careerMatches[0]?.role}</h3>
-              <p>{plan.careerMatches[0]?.reason}</p>
-              <div className="match-list">
-                {plan.careerMatches.slice(0, 4).map(match => (
-                  <div key={match.role}>
-                    <span>{match.role}</span>
-                    <meter min="0" max="100" value={match.fit} />
-                    <strong>{match.fit}%</strong>
+          <div className="panel readiness-panel" id="live-readiness-score">
+            {plan ? (
+              <>
+                <div className="score-ring" style={{ '--score': `${plan.readinessScore * 3.6}deg` }}>
+                  <strong>{plan.readinessScore}</strong>
+                  <span>Readiness</span>
+                </div>
+                <div>
+                  <h2>Top Career Match</h2>
+                  <h3>{plan.careerMatches[0]?.role}</h3>
+                  <p>{plan.careerMatches[0]?.reason}</p>
+                  <div className="match-list">
+                    {plan.careerMatches.slice(0, 4).map(match => (
+                      <div key={match.role}>
+                        <span>{match.role}</span>
+                        <meter min="0" max="100" value={match.fit} />
+                        <strong>{match.fit}%</strong>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+              </>
+            ) : (
+              <div className="empty-state">
+                <Gauge size={48} />
+                <h3>No Career Plan Yet</h3>
+                <p>Fill in your profile and click "Generate AI Plan" to see your readiness score and career matches.</p>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
         <section className="main-grid">
-          <div className="panel">
+          <div className="panel" id="skill-gap-matrix">
             <div className="panel-heading">
               <Activity size={21} />
               <h2>Skill-Gap Matrix</h2>
             </div>
-            <div className="gap-list">
-              {plan.skillGaps.map(gap => (
-                <div className="gap-row" key={gap.skill}>
-                  <span>{gap.skill}</span>
-                  <div className="heat-track"><i style={{ width: `${gap.readiness}%` }} /></div>
-                  <strong className={gap.priority.toLowerCase()}>{gap.priority}</strong>
-                </div>
-              ))}
-            </div>
+            {plan ? (
+              <div className="gap-list">
+                {plan.skillGaps.map(gap => (
+                  <div className="gap-row" key={gap.skill}>
+                    <span>{gap.skill}</span>
+                    <div className="heat-track"><i style={{ width: `${gap.readiness}%` }} /></div>
+                    <strong className={gap.priority.toLowerCase()}>{gap.priority}</strong>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-state-text">Generate a career plan to see your skill gaps.</p>
+            )}
           </div>
 
-          <div className="panel">
+          <div className="panel" id="ai-roadmap">
             <div className="panel-heading">
               <Map size={21} />
               <h2>Week-by-Week Roadmap</h2>
             </div>
-            <div className="roadmap">
-              {plan.roadmap.map(week => (
-                <article key={week.week}>
-                  <span>Week {week.week}</span>
-                  <strong>{week.focus}</strong>
-                  <p>{week.actions.join(' · ')}</p>
-                  <small>{week.proofOfWork}</small>
-                </article>
-              ))}
-            </div>
+            {plan ? (
+              <div className="roadmap">
+                {plan.roadmap.map(week => (
+                  <article key={week.week}>
+                    <span>Week {week.week}</span>
+                    <strong>{week.focus}</strong>
+                    <p>{week.actions.join(' · ')}</p>
+                    <small>{week.proofOfWork}</small>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-state-text">Generate a career plan to see your personalized roadmap.</p>
+            )}
           </div>
         </section>
 
         <section className="main-grid">
-          <div className="panel">
+          <div className="panel" id="resume-intelligence">
             <div className="panel-heading">
               <FileText size={21} />
               <h2>Resume Intelligence</h2>
             </div>
-            <textarea value={resumeText} onChange={e => setResumeText(e.target.value)} />
-            <button className="secondary" onClick={analyzeResume} disabled={loading === '/resume/analyze'}>
-              <FileText size={17} />
-              {loading === '/resume/analyze' ? 'Analyzing...' : 'Analyze Resume'}
-            </button>
+            <textarea value={resumeText} onChange={e => setResumeText(e.target.value)}
+              placeholder="Paste your resume text here, or upload a file..." />
+            <div className="resume-actions">
+              <label className="file-upload-btn secondary">
+                <FileText size={17} />
+                Upload Resume
+                <input type="file" accept=".txt,.pdf,.doc,.docx" style={{ display: 'none' }}
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = () => setResumeText(reader.result);
+                      reader.readAsText(file);
+                    }
+                  }} />
+              </label>
+              <button className="secondary" onClick={analyzeResume} disabled={loading === '/resume/analyze' || !resumeText.trim()}>
+                {loading === '/resume/analyze' ? 'Analyzing...' : 'Analyze Resume'}
+              </button>
+            </div>
             {resume && <ScoreSummary scores={[['ATS', resume.atsScore], ['Content', resume.contentScore], ['Impact', resume.impactScore]]} notes={resume.fixes} />}
           </div>
 
-          <div className="panel">
+          <div className="panel" id="mock-interview-ai">
             <div className="panel-heading">
               <MessageSquareText size={21} />
               <h2>Mock Interview AI</h2>
             </div>
             <p className="question">Tell me about your best full-stack project.</p>
-            <textarea value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)} />
-            <button className="secondary" onClick={scoreInterview} disabled={loading === '/interview/score'}>
+            <textarea value={interviewAnswer} onChange={e => setInterviewAnswer(e.target.value)}
+              placeholder="Type your answer here..." />
+            <button className="secondary" onClick={scoreInterview} disabled={loading === '/interview/score' || !interviewAnswer.trim()}>
               <MessageSquareText size={17} />
               {loading === '/interview/score' ? 'Scoring...' : 'Score Answer'}
             </button>

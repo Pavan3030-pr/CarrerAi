@@ -712,6 +712,95 @@ nav a.active {
   color: white;
 }
 
+/* Error banner */
+.api-error-banner {
+  background: #fef2f2;
+  border: 1px solid var(--red);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.error-dismiss {
+  background: none;
+  border: 0;
+  color: #991b1b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.error-dismiss:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Empty states */
+.empty-state {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 12px;
+  width: 100%;
+}
+
+.empty-state svg {
+  color: var(--muted);
+}
+
+.empty-state h3 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.empty-state p {
+  color: var(--muted);
+  max-width: 320px;
+  margin: 0;
+}
+
+.empty-state-text {
+  color: var(--muted);
+  text-align: center;
+  padding: 32px 20px;
+}
+
+/* Resume actions */
+.resume-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.file-upload-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: inherit;
+  background: #e7edf5;
+  color: var(--ink);
+}
+
+.file-upload-btn:hover {
+  background: #d8e0ec;
+}
+
 @media (max-width: 1180px) {
   .metrics-grid {
     grid-template-columns: repeat(3, minmax(160px, 1fr));
