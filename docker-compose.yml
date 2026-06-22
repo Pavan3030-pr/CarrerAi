@@ -1,4 +1,20 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: careercompass
+      POSTGRES_PASSWORD: careercompass_secret
+      POSTGRES_DB: careercompass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U careercompass"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -7,6 +23,14 @@ services:
     environment:
       - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - JDBC_DATABASE_URL=jdbc:postgresql://db:5432/careercompass
+      - JDBC_DATABASE_DRIVER=org.postgresql.Driver
+      - JDBC_DATABASE_USERNAME=careercompass
+      - JDBC_DATABASE_PASSWORD=careercompass_secret
+      - JPA_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -17,3 +41,6 @@ services:
       - VITE_API_BASE_URL=http://localhost:8080/api
     depends_on:
       - backend
+
+volumes:
+  pgdata:

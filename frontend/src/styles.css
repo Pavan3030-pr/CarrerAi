@@ -640,6 +640,78 @@ meter {
   font-size: 13px;
 }
 
+/* Admin Dashboard */
+.admin-dashboard {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.admin-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.admin-stat-card svg {
+  margin: 0 auto;
+  color: var(--blue);
+}
+
+.admin-stat-card strong {
+  font-size: 32px;
+  color: var(--ink);
+}
+
+.admin-stat-card span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-table th {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.admin-table tr:hover td {
+  background: #f7fafc;
+}
+
+.admin-empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 40px 20px;
+}
+
+nav a.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
 @media (max-width: 1180px) {
   .metrics-grid {
     grid-template-columns: repeat(3, minmax(160px, 1fr));

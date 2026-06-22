@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   Activity,
@@ -17,6 +17,12 @@ import {
   Target,
   User,
   X,
+  BarChart3,
+  Users,
+  TrendingUp,
+  Clock,
+  BookOpen,
+  Award,
 } from 'lucide-react';
 import './styles.css';
 
@@ -33,6 +39,9 @@ const defaultPlan = {
 const demoResume = 'Java full stack developer with Spring Boot, React, SQL and REST API projects. Built a placement preparation platform and improved dashboard tracking by 30%.';
 
 function App() {
+  // View state
+  const [view, setView] = useState('dashboard');
+
   // Auth state
   const [token, setToken] = useState(() => localStorage.getItem('careercompass_token') || '');
   const [user, setUser] = useState(() => {
@@ -48,6 +57,11 @@ function App() {
   const [authPassword, setAuthPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+
+  // Admin state
+  const [adminData, setAdminData] = useState(null);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(false);
 
   // Profile & app state
   const [profile, setProfile] = useState({
@@ -179,6 +193,29 @@ function App() {
     setFeedback(data);
   }
 
+  // Admin data fetching
+  async function fetchAdminData() {
+    if (!token) return;
+    setAdminLoading(true);
+    try {
+      const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+      const [overview, users] = await Promise.all([
+        fetch(`${API_BASE}/admin/analytics/overview`, { headers }).then(r => r.ok ? r.json() : null),
+        fetch(`${API_BASE}/admin/users`, { headers }).then(r => r.ok ? r.json() : null),
+      ]);
+      setAdminData(overview);
+      setAdminUsers(users || []);
+    } catch (e) {
+      console.warn('Failed to fetch admin data', e);
+    } finally {
+      setAdminLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (view === 'admin' && token) fetchAdminData();
+  }, [view, token]);
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -212,12 +249,20 @@ function App() {
         )}
 
         <nav>
+          <a href="#" onClick={e => { e.preventDefault(); setView('dashboard'); }} className={view === 'dashboard' ? 'active' : ''}>
+            <BarChart3 size={18} />
+            <span>Dashboard</span>
+          </a>
           {modules.map(({ icon: Icon, label }) => (
-            <a href={`#${label.toLowerCase().replaceAll(' ', '-')}`} key={label}>
+            <a href={`#${label.toLowerCase().replaceAll(' ', '-')}`} key={label} onClick={e => { e.preventDefault(); setView('dashboard'); }}>
               <Icon size={18} />
               <span>{label}</span>
             </a>
           ))}
+          <a href="#" onClick={e => { e.preventDefault(); setView('admin'); }} className={view === 'admin' ? 'active' : ''}>
+            <Users size={18} />
+            <span>Admin Dashboard</span>
+          </a>
         </nav>
         <div className="sidebar-proof">
           <ShieldCheck size={18} />
@@ -226,6 +271,15 @@ function App() {
       </aside>
 
       <section className="workspace">
+        {view === 'admin' ? (
+          <AdminDashboard
+            data={adminData}
+            users={adminUsers}
+            loading={adminLoading}
+            onRefresh={fetchAdminData}
+          />
+        ) : (
+        <>
         <header className="topbar">
           <div>
             <p className="eyebrow">Hackathon MVP {user ? `· ${user.name}` : ''}</p>
@@ -392,8 +446,102 @@ function App() {
             )}
           </div>
         </section>
+        </>
+        )}
       </section>
     </main>
+  );
+}
+
+function AdminDashboard({ data, users, loading, onRefresh }) {
+  return (
+    <div className="admin-dashboard">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">Admin Panel</p>
+          <h1>Cohort Readiness Analytics</h1>
+        </div>
+        <button className="primary" onClick={onRefresh} disabled={loading}>
+          <TrendingUp size={18} />
+          {loading ? 'Loading...' : 'Refresh Data'}
+        </button>
+      </header>
+
+      {data ? (
+        <>
+          <section className="admin-stats-grid">
+            <div className="admin-stat-card">
+              <Users size={24} />
+              <strong>{data.totalUsers}</strong>
+              <span>Total Users</span>
+            </div>
+            <div className="admin-stat-card">
+              <BookOpen size={24} />
+              <strong>{data.totalCareerPlans}</strong>
+              <span>Career Plans</span>
+            </div>
+            <div className="admin-stat-card">
+              <FileText size={24} />
+              <strong>{data.totalResumeAnalyses}</strong>
+              <span>Resume Analyses</span>
+            </div>
+            <div className="admin-stat-card">
+              <MessageSquareText size={24} />
+              <strong>{data.totalInterviewFeedbacks}</strong>
+              <span>Interviews</span>
+            </div>
+            <div className="admin-stat-card">
+              <Award size={24} />
+              <strong>{data.averageReadinessScore}/100</strong>
+              <span>Avg Readiness</span>
+            </div>
+            <div className="admin-stat-card">
+              <TrendingUp size={24} />
+              <strong>{data.averageInterviewScore}/100</strong>
+              <span>Avg Interview</span>
+            </div>
+            <div className="admin-stat-card">
+              <Clock size={24} />
+              <strong>{data.recentSignups7Days}</strong>
+              <span>Signups (7 days)</span>
+            </div>
+          </section>
+
+          <div className="panel">
+            <div className="panel-heading">
+              <Users size={21} />
+              <h2>Registered Users</h2>
+            </div>
+            {users.length > 0 ? (
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id}>
+                      <td>{u.name}</td>
+                      <td>{u.email}</td>
+                      <td>{new Date(u.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="admin-empty">No users registered yet. Sign in or register to see data here.</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="panel">
+          <p>Sign in and click "Refresh Data" to load analytics. Admin data requires authentication.</p>
+        </div>
+      )}
+    </div>
   );
 }
 

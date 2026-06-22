@@ -3,12 +3,16 @@ package com.carrerai.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.carrerai.dto.InterviewRequest;
 import com.carrerai.dto.ProfileRequest;
 import com.carrerai.dto.ResumeRequest;
 import com.carrerai.model.CareerPlanResponse;
 import com.carrerai.model.InterviewFeedback;
 import com.carrerai.model.ResumeAnalysis;
+import com.carrerai.repository.CareerPlanRepository;
+import com.carrerai.repository.InterviewFeedbackRepository;
+import com.carrerai.repository.ResumeAnalysisRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,15 +23,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CareerAiServiceTest {
 
-  @Mock
-  private GeminiService gemini;
+  @Mock private GeminiService gemini;
+  @Mock private CareerPlanRepository careerPlanRepo;
+  @Mock private ResumeAnalysisRepository resumeRepo;
+  @Mock private InterviewFeedbackRepository interviewRepo;
+  private ObjectMapper objectMapper;
   private CareerAiService service;
 
   @BeforeEach
   void setUp() {
-    // Gemini returns null (not available), so tests exercise the mock fallback
+    objectMapper = new ObjectMapper();
     when(gemini.isAvailable()).thenReturn(false);
-    service = new CareerAiService(gemini);
+    service = new CareerAiService(gemini, careerPlanRepo, resumeRepo, interviewRepo, objectMapper);
   }
 
   @Test
@@ -37,7 +44,7 @@ class CareerAiServiceTest {
         List.of("Java", "Spring Boot", "React", "SQL", "Git"),
         List.of("AI", "Web development"));
 
-    CareerPlanResponse plan = service.buildPlan(req);
+    CareerPlanResponse plan = service.buildPlan(req, null);
 
     assertTrue(plan.readinessScore() >= 0 && plan.readinessScore() <= 100);
     assertFalse(plan.careerMatches().isEmpty());
@@ -53,7 +60,7 @@ class CareerAiServiceTest {
         "Test", "B.Tech", "Developer", "Student",
         List.of("Java", "Spring Boot", "React"), List.of());
 
-    CareerPlanResponse plan = service.buildPlan(req);
+    CareerPlanResponse plan = service.buildPlan(req, null);
 
     for (int i = 1; i < plan.careerMatches().size(); i++) {
       assertTrue(plan.careerMatches().get(i - 1).fit() >= plan.careerMatches().get(i).fit());
@@ -65,7 +72,7 @@ class CareerAiServiceTest {
     ProfileRequest req = new ProfileRequest(
         "Test", "B.Tech", "Developer", "Student", null, null);
 
-    CareerPlanResponse plan = service.buildPlan(req);
+    CareerPlanResponse plan = service.buildPlan(req, null);
 
     assertNotNull(plan);
     assertFalse(plan.skillGaps().isEmpty());
@@ -76,10 +83,10 @@ class CareerAiServiceTest {
     ProfileRequest req = new ProfileRequest(
         "Test", "B.Tech", "Developer", "Student", List.of(), List.of());
 
-    CareerPlanResponse plan = service.buildPlan(req);
+    CareerPlanResponse plan = service.buildPlan(req, null);
 
     assertNotNull(plan);
-    assertTrue(plan.readinessScore() < 80); // lower readiness with no skills
+    assertTrue(plan.readinessScore() < 80);
   }
 
   @Test
@@ -87,7 +94,7 @@ class CareerAiServiceTest {
     ResumeRequest req = new ResumeRequest("Java Full Stack Developer",
         "Experienced Java developer with Spring Boot, React, SQL, and REST API projects.");
 
-    ResumeAnalysis analysis = service.analyzeResume(req);
+    ResumeAnalysis analysis = service.analyzeResume(req, null);
 
     assertTrue(analysis.atsScore() > 0);
     assertTrue(analysis.contentScore() > 0);
@@ -101,7 +108,7 @@ class CareerAiServiceTest {
   void analyzeResume_handlesNullText() {
     ResumeRequest req = new ResumeRequest("Developer", null);
 
-    ResumeAnalysis analysis = service.analyzeResume(req);
+    ResumeAnalysis analysis = service.analyzeResume(req, null);
 
     assertNotNull(analysis);
     assertTrue(analysis.atsScore() >= 0);
@@ -113,7 +120,7 @@ class CareerAiServiceTest {
         "Tell me about a project",
         "In my recent project, I used Spring Boot and React. The situation was challenging. My task was to build the backend. I took action by designing REST APIs. The result was a working demo.");
 
-    InterviewFeedback feedback = service.scoreInterview(req);
+    InterviewFeedback feedback = service.scoreInterview(req, null);
 
     assertTrue(feedback.score() >= 0 && feedback.score() <= 100);
     assertNotNull(feedback.question());
@@ -126,7 +133,7 @@ class CareerAiServiceTest {
   void scoreInterview_handlesNullAnswer() {
     InterviewRequest req = new InterviewRequest("Developer", "Question", null);
 
-    InterviewFeedback feedback = service.scoreInterview(req);
+    InterviewFeedback feedback = service.scoreInterview(req, null);
 
     assertNotNull(feedback);
     assertTrue(feedback.score() >= 0);
@@ -140,8 +147,8 @@ class CareerAiServiceTest {
     InterviewRequest basicReq = new InterviewRequest("Developer", "Question",
         "I built an API and it was fine.");
 
-    InterviewFeedback starFeedback = service.scoreInterview(starReq);
-    InterviewFeedback basicFeedback = service.scoreInterview(basicReq);
+    InterviewFeedback starFeedback = service.scoreInterview(starReq, null);
+    InterviewFeedback basicFeedback = service.scoreInterview(basicReq, null);
 
     assertTrue(starFeedback.score() > basicFeedback.score(),
         "STAR answers should score higher than basic answers");

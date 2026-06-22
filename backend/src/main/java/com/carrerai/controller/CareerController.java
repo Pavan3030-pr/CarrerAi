@@ -7,6 +7,7 @@ import com.carrerai.model.CareerPlanResponse;
 import com.carrerai.model.InterviewFeedback;
 import com.carrerai.model.ResumeAnalysis;
 import com.carrerai.service.CareerAiService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,17 +29,20 @@ public class CareerController {
   }
 
   @PostMapping("/career-plan")
-  CareerPlanResponse careerPlan(@RequestBody ProfileRequest request) {
-    return careerAiService.buildPlan(request);
+  CareerPlanResponse careerPlan(@RequestBody ProfileRequest request, Authentication auth) {
+    String email = auth != null ? auth.getName() : null;
+    return careerAiService.buildPlan(request, email);
   }
 
   @PostMapping("/resume/analyze")
-  ResumeAnalysis resume(@RequestBody ResumeRequest request) {
-    return careerAiService.analyzeResume(request);
+  ResumeAnalysis resume(@RequestBody ResumeRequest request, Authentication auth) {
+    String email = auth != null ? auth.getName() : null;
+    return careerAiService.analyzeResume(request, email);
   }
 
   @PostMapping("/interview/score")
-  InterviewFeedback interview(@RequestBody InterviewRequest request) {
-    return careerAiService.scoreInterview(request);
+  InterviewFeedback interview(@RequestBody InterviewRequest request, Authentication auth) {
+    String email = auth != null ? auth.getName() : null;
+    return careerAiService.scoreInterview(request, email);
   }
 }

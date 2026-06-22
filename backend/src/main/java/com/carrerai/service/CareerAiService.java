@@ -1,9 +1,12 @@
 package com.carrerai.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.carrerai.dto.InterviewRequest;
 import com.carrerai.dto.ProfileRequest;
 import com.carrerai.dto.ResumeRequest;
+import com.carrerai.model.*;
+import com.carrerai.repository.*;
 import com.carrerai.model.CareerPlanResponse;
 import com.carrerai.model.CareerScore;
 import com.carrerai.model.GapScore;
@@ -26,70 +29,127 @@ public class CareerAiService {
       "Java", "Spring Boot", "React", "SQL", "DSA", "REST APIs", "Git", "Cloud", "Communication");
 
   private final GeminiService gemini;
+  private final CareerPlanRepository careerPlanRepo;
+  private final ResumeAnalysisRepository resumeRepo;
+  private final InterviewFeedbackRepository interviewRepo;
+  private final ObjectMapper objectMapper;
 
-  public CareerAiService(GeminiService gemini) {
+  public CareerAiService(GeminiService gemini,
+      CareerPlanRepository careerPlanRepo,
+      ResumeAnalysisRepository resumeRepo,
+      InterviewFeedbackRepository interviewRepo,
+      ObjectMapper objectMapper) {
     this.gemini = gemini;
+    this.careerPlanRepo = careerPlanRepo;
+    this.resumeRepo = resumeRepo;
+    this.interviewRepo = interviewRepo;
+    this.objectMapper = objectMapper;
   }
 
   // --------------------------------------------------------------------------
   // Career Plan (assessment + gaps + roadmap)
   // --------------------------------------------------------------------------
 
-  public CareerPlanResponse buildPlan(ProfileRequest request) {
-    // Try Gemini first
+  public CareerPlanResponse buildPlan(ProfileRequest request, String userEmail) {
+    CareerPlanResponse plan;
     if (gemini.isAvailable()) {
       try {
         JsonNode ai = gemini.generateStructured(
             careerPlanSystemPrompt(),
             careerPlanUserPrompt(request));
         if (ai != null) {
-          return parseCareerPlan(ai, request);
+          plan = parseCareerPlan(ai, request);
+        } else {
+          plan = mockCareerPlan(request);
         }
       } catch (Exception e) {
         log.warn("Gemini career-plan failed, using mock: {}", e.getMessage());
+        plan = mockCareerPlan(request);
       }
+    } else {
+      plan = mockCareerPlan(request);
     }
-    return mockCareerPlan(request);
+    // Persist to database
+    try {
+      String json = objectMapper.writeValueAsString(plan);
+      careerPlanRepo.save(new CareerPlanEntity(
+          userEmail != null ? userEmail : "anonymous",
+          request.name(), request.degree(), request.targetRole(),
+          request.experienceLevel(), plan.readinessScore(), json));
+    } catch (Exception e) {
+      log.warn("Failed to persist career plan: {}", e.getMessage());
+    }
+    return plan;
   }
 
   // --------------------------------------------------------------------------
   // Resume Analysis
   // --------------------------------------------------------------------------
 
-  public ResumeAnalysis analyzeResume(ResumeRequest request) {
+  public ResumeAnalysis analyzeResume(ResumeRequest request, String userEmail) {
+    ResumeAnalysis analysis;
     if (gemini.isAvailable()) {
       try {
         JsonNode ai = gemini.generateStructured(
             resumeAnalysisSystemPrompt(),
             resumeAnalysisUserPrompt(request));
         if (ai != null) {
-          return parseResumeAnalysis(ai);
+          analysis = parseResumeAnalysis(ai);
+        } else {
+          analysis = mockResumeAnalysis(request);
         }
       } catch (Exception e) {
         log.warn("Gemini resume analysis failed, using mock: {}", e.getMessage());
+        analysis = mockResumeAnalysis(request);
       }
+    } else {
+      analysis = mockResumeAnalysis(request);
     }
-    return mockResumeAnalysis(request);
+    try {
+      String json = objectMapper.writeValueAsString(analysis);
+      resumeRepo.save(new ResumeAnalysisEntity(
+          userEmail != null ? userEmail : "anonymous",
+          request.targetRole(), request.resumeText(),
+          analysis.atsScore(), analysis.contentScore(), analysis.impactScore(), json));
+    } catch (Exception e) {
+      log.warn("Failed to persist resume analysis: {}", e.getMessage());
+    }
+    return analysis;
   }
 
   // --------------------------------------------------------------------------
   // Interview Scoring
   // --------------------------------------------------------------------------
 
-  public InterviewFeedback scoreInterview(InterviewRequest request) {
+  public InterviewFeedback scoreInterview(InterviewRequest request, String userEmail) {
+    InterviewFeedback feedback;
     if (gemini.isAvailable()) {
       try {
         JsonNode ai = gemini.generateStructured(
             interviewSystemPrompt(),
             interviewUserPrompt(request));
         if (ai != null) {
-          return parseInterviewFeedback(ai, request);
+          feedback = parseInterviewFeedback(ai, request);
+        } else {
+          feedback = mockInterviewFeedback(request);
         }
       } catch (Exception e) {
         log.warn("Gemini interview scoring failed, using mock: {}", e.getMessage());
+        feedback = mockInterviewFeedback(request);
       }
+    } else {
+      feedback = mockInterviewFeedback(request);
     }
-    return mockInterviewFeedback(request);
+    try {
+      String json = objectMapper.writeValueAsString(feedback);
+      interviewRepo.save(new InterviewFeedbackEntity(
+          userEmail != null ? userEmail : "anonymous",
+          request.targetRole(), request.question(), request.answer(),
+          feedback.score(), json));
+    } catch (Exception e) {
+      log.warn("Failed to persist interview feedback: {}", e.getMessage());
+    }
+    return feedback;
   }
 
   // ==========================================================================
