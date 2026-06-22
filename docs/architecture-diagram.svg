@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#101828;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2a3a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="frontendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="backendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f9f9a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0b8a85;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="databaseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#d97706;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b45309;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="aiGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b91c1c;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.15"/>
+    </filter>
+    <filter id="shadowLight">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0f9f9a"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#f3f6f8" rx="0"/>
+
+  <!-- Title -->
+  <rect x="0" y="0" width="1200" height="64" fill="url(#headerGrad)"/>
+  <text x="600" y="40" text-anchor="middle" fill="white" font-size="22" font-weight="800">CareerCompass AI — System Architecture</text>
+
+  <!-- ===== LAYER 1: USER ===== -->
+  <rect x="460" y="84" width="280" height="56" rx="28" fill="white" stroke="#d8dee8" stroke-width="2" filter="url(#shadowLight)"/>
+  <text x="600" y="118" text-anchor="middle" fill="#15202b" font-size="18" font-weight="700">👤 User (Browser)</text>
+  <line x1="600" y1="140" x2="600" y2="162" stroke="#2563eb" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Arrow label: HTTP -->
+  <rect x="530" y="145" width="140" height="20" rx="10" fill="#e7edf5"/>
+  <text x="600" y="159" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">HTTP / JWT</text>
+
+  <!-- ===== LAYER 2: FRONTEND ===== -->
+  <rect x="60" y="170" width="1080" height="178" rx="12" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="60" y="170" width="1080" height="32" rx="12" fill="url(#frontendGrad)"/>
+  <rect x="60" y="190" width="1080" height="12" fill="url(#frontendGrad)"/>
+  <text x="600" y="192" text-anchor="middle" fill="white" font-size="14" font-weight="800">🎨 React + Vite Frontend (Port 5173)</text>
+
+  <!-- Module boxes -->
+  <rect x="90" y="216" width="150" height="52" rx="8" fill="#f0f5ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="165" y="240" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">Dashboard</text>
+  <text x="165" y="256" text-anchor="middle" fill="#667085" font-size="10">📊 Metrics Overview</text>
+
+  <rect x="258" y="216" width="150" height="52" rx="8" fill="#f0f5ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="333" y="240" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">Career Profiling</text>
+  <text x="333" y="256" text-anchor="middle" fill="#667085" font-size="10">🧠 Assessment Form</text>
+
+  <rect x="426" y="216" width="150" height="52" rx="8" fill="#f0f5ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="501" y="240" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">Skill-Gap Matrix</text>
+  <text x="501" y="256" text-anchor="middle" fill="#667085" font-size="10">🎯 Heatmap View</text>
+
+  <rect x="594" y="216" width="150" height="52" rx="8" fill="#f0f5ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="669" y="240" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">AI Roadmap</text>
+  <text x="669" y="256" text-anchor="middle" fill="#667085" font-size="10">🗺️ Weekly Plan</text>
+
+  <rect x="762" y="216" width="150" height="52" rx="8" fill="#f0f5ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="837" y="240" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">Resume Intelligence</text>
+  <text x="837" y="256" text-anchor="middle" fill="#667085" font-size="10">📄 ATS Scoring</text>
+
+  <rect x="930" y="216" width="180" height="52" rx="8" fill="#f0f5ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="1020" y="240" text-anchor="middle" fill="#2563eb" font-size="12" font-weight="700">Mock Interview AI</text>
+  <text x="1020" y="256" text-anchor="middle" fill="#667085" font-size="10">🎤 STAR Coaching</text>
+
+  <!-- Admin Dashboard link -->
+  <text x="600" y="336" text-anchor="middle" fill="#667085" font-size="12">🛡️ Admin Dashboard · Demo Mode Toggle · 8-Item Sidebar Navigation</text>
+
+  <!-- Arrow: Frontend → Backend -->
+  <line x1="600" y1="348" x2="600" y2="382" stroke="#0f9f9a" stroke-width="2" marker-end="url(#arrowTeal)"/>
+  <rect x="480" y="352" width="240" height="20" rx="10" fill="#e7edf5"/>
+  <text x="600" y="366" text-anchor="middle" fill="#0f9f9a" font-size="12" font-weight="700">REST API Calls + JWT Bearer Token</text>
+
+  <!-- ===== LAYER 3: BACKEND ===== -->
+  <rect x="60" y="390" width="1080" height="228" rx="12" fill="white" stroke="#0f9f9a" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="60" y="390" width="1080" height="32" rx="12" fill="url(#backendGrad)"/>
+  <rect x="60" y="410" width="1080" height="12" fill="url(#backendGrad)"/>
+  <text x="600" y="412" text-anchor="middle" fill="white" font-size="14" font-weight="800">⚙️ Spring Boot Backend (Port 8080)</text>
+
+  <!-- Controllers -->
+  <rect x="90" y="436" width="220" height="70" rx="8" fill="#f0fdfa" stroke="#0f9f9a" stroke-width="1.5"/>
+  <text x="200" y="460" text-anchor="middle" fill="#0f9f9a" font-size="13" font-weight="700">Controllers</text>
+  <text x="200" y="478" text-anchor="middle" fill="#344054" font-size="11">AuthController</text>
+  <text x="200" y="494" text-anchor="middle" fill="#344054" font-size="11">CareerController · AdminController</text>
+
+  <!-- Services -->
+  <rect x="350" y="436" width="220" height="70" rx="8" fill="#f0fdfa" stroke="#0f9f9a" stroke-width="1.5"/>
+  <text x="460" y="460" text-anchor="middle" fill="#0f9f9a" font-size="13" font-weight="700">Services</text>
+  <text x="460" y="478" text-anchor="middle" fill="#344054" font-size="11">AuthService (JWT + BCrypt)</text>
+  <text x="460" y="494" text-anchor="middle" fill="#344054" font-size="11">CareerAiService (AI Logic)</text>
+
+  <!-- Security -->
+  <rect x="610" y="436" width="220" height="70" rx="8" fill="#f0fdfa" stroke="#0f9f9a" stroke-width="1.5"/>
+  <text x="720" y="460" text-anchor="middle" fill="#0f9f9a" font-size="13" font-weight="700">Security Layer</text>
+  <text x="720" y="478" text-anchor="middle" fill="#344054" font-size="11">JwtAuthFilter</text>
+  <text x="720" y="494" text-anchor="middle" fill="#344054" font-size="11">GlobalExceptionHandler</text>
+
+  <!-- Gemini Service -->
+  <rect x="870" y="436" width="240" height="70" rx="8" fill="#f0fdfa" stroke="#0f9f9a" stroke-width="1.5"/>
+  <text x="990" y="460" text-anchor="middle" fill="#0f9f9a" font-size="13" font-weight="700">Gemini Service</text>
+  <text x="990" y="478" text-anchor="middle" fill="#344054" font-size="11">WebClient → Gemini API</text>
+  <text x="990" y="494" text-anchor="middle" fill="#344054" font-size="11">Structured Prompt Templates</text>
+
+  <!-- Repositories -->
+  <rect x="200" y="522" width="800" height="42" rx="8" fill="#f7fafc" stroke="#b7c3d3" stroke-width="1.5" stroke-dasharray="4"/>
+  <text x="600" y="540" text-anchor="middle" fill="#667085" font-size="12" font-weight="600">📦 JPA Repositories: UserRepository · CareerPlanRepository · ResumeAnalysisRepository · InterviewFeedbackRepository</text>
+  <text x="600" y="554" text-anchor="middle" fill="#667085" font-size="11">Spring Data JPA · Hibernate ORM · DDL Auto-Update</text>
+
+  <!-- Arrow: Backend → Database -->
+  <line x1="340" y1="618" x2="340" y2="652" stroke="#d97706" stroke-width="2" marker-end="url(#arrowAmber)"/>
+  <rect x="280" y="622" width="120" height="20" rx="10" fill="#fffbeb"/>
+  <text x="340" y="636" text-anchor="middle" fill="#d97706" font-size="11" font-weight="700">JDBC / JPA</text>
+
+  <!-- Arrow: Backend → Gemini API -->
+  <line x1="990" y1="506" x2="990" y2="536" stroke="#0f9f9a" stroke-width="1.5"/>
+  <line x1="990" y1="618" x2="990" y2="652" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <rect x="900" y="622" width="180" height="20" rx="10" fill="#fef2f2"/>
+  <text x="990" y="636" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">REST/gRPC ↔ Gemini API</text>
+
+  <!-- ===== LAYER 4: DATABASE ===== -->
+  <rect x="60" y="660" width="560" height="118" rx="12" fill="white" stroke="#d97706" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="60" y="660" width="560" height="32" rx="12" fill="url(#databaseGrad)"/>
+  <rect x="60" y="680" width="560" height="12" fill="url(#databaseGrad)"/>
+  <text x="340" y="682" text-anchor="middle" fill="white" font-size="14" font-weight="800">🗄️ Database (H2 / PostgreSQL)</text>
+
+  <rect x="90" y="704" width="110" height="56" rx="6" fill="#fffbeb" stroke="#d97706" stroke-width="1"/>
+  <text x="145" y="726" text-anchor="middle" fill="#d97706" font-size="11" font-weight="700">users</text>
+  <text x="145" y="744" text-anchor="middle" fill="#667085" font-size="10">name, email, hash</text>
+
+  <rect x="215" y="704" width="110" height="56" rx="6" fill="#fffbeb" stroke="#d97706" stroke-width="1"/>
+  <text x="270" y="726" text-anchor="middle" fill="#d97706" font-size="11" font-weight="700">career_plans</text>
+  <text x="270" y="744" text-anchor="middle" fill="#667085" font-size="10">profile, scores, JSON</text>
+
+  <rect x="340" y="704" width="110" height="56" rx="6" fill="#fffbeb" stroke="#d97706" stroke-width="1"/>
+  <text x="395" y="726" text-anchor="middle" fill="#d97706" font-size="11" font-weight="700">resume_analyses</text>
+  <text x="395" y="744" text-anchor="middle" fill="#667085" font-size="10">scores, fixes, JSON</text>
+
+  <rect x="465" y="704" width="125" height="56" rx="6" fill="#fffbeb" stroke="#d97706" stroke-width="1"/>
+  <text x="527" y="726" text-anchor="middle" fill="#d97706" font-size="11" font-weight="700">interview_feedbacks</text>
+  <text x="527" y="744" text-anchor="middle" fill="#667085" font-size="10">score, tips, JSON</text>
+
+  <!-- ===== LAYER 5: GEMINI AI ===== -->
+  <rect x="680" y="660" width="460" height="118" rx="12" fill="white" stroke="#dc2626" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="680" y="660" width="460" height="32" rx="12" fill="url(#aiGrad)"/>
+  <rect x="680" y="680" width="460" height="12" fill="url(#aiGrad)"/>
+  <text x="910" y="682" text-anchor="middle" fill="white" font-size="14" font-weight="800">🤖 Google Gemini 2.0 Flash API</text>
+
+  <rect x="710" y="704" width="130" height="56" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+  <text x="775" y="726" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">Career Planning</text>
+  <text x="775" y="744" text-anchor="middle" fill="#667085" font-size="10">Profile Analysis</text>
+
+  <rect x="855" y="704" width="130" height="56" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+  <text x="920" y="726" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">Resume Review</text>
+  <text x="920" y="744" text-anchor="middle" fill="#667085" font-size="10">ATS + Content</text>
+
+  <rect x="1000" y="704" width="110" height="56" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+  <text x="1055" y="726" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">Interview Coach</text>
+  <text x="1055" y="744" text-anchor="middle" fill="#667085" font-size="10">STAR Scoring</text>
+
+  <!-- ===== FOOTER ===== -->
+  <rect x="0" y="802" width="1200" height="98" fill="#101828"/>
+  <text x="600" y="826" text-anchor="middle" fill="#b7c3d3" font-size="13">Tech Stack: Java 21 · Spring Boot 3.5 · React 19 · Vite 7 · Gemini AI · JWT · PostgreSQL / H2</text>
+  <text x="600" y="848" text-anchor="middle" fill="#667085" font-size="12">Authentication: JWT (HMAC-SHA256) · Password: BCrypt · Database: JPA (H2/PostgreSQL) · AI: Gemini 2.0 Flash</text>
+  <text x="600" y="872" text-anchor="middle" fill="#4a5568" font-size="11">CareerCompass AI — Hackathon 2026 · github.com/Pavan3030-pr/CarrerAi</text>
+</svg>
