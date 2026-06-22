@@ -50,7 +50,7 @@
 | **3:40** | **"The verdict says 'Strong answer' with coaching tips and an improved, STAR-formatted answer."** | Point to feedback section |
 | **4:00** | **"Admin Dashboard — cohort-level analytics: total users, plans generated, resumes analyzed, interview scores, and recent signups."** | Click **Admin Dashboard** |
 | **4:20** | **"Under the hood: Java 21 + Spring Boot 3.5 backend with JWT auth, BCrypt hashing, JPA persistence. Frontend is React 19 + Vite with Lucide icons. Gemini AI powers all analysis."** | Show architecture diagram |
-| **4:40** | **"Deployable via Docker or Railway. 28 backend tests pass. Frontend builds clean. Fully functional in 48 hours."** | Show test output |
+| **4:40** | **"Deployable via Docker, Vercel, or Render. 28 backend tests pass. Frontend builds clean. Fully functional in 48 hours."** | Show test output |
 | **5:00** | **"Thank you! I'm happy to answer questions."** | — |
 
 ---
@@ -78,7 +78,7 @@
 | **7:30** | **Gemini Integration Deep-Dive:** "Three structured prompts: career coach, ATS reviewer, interview coach. System instructions enforce JSON output. Temperature 0.4 for consistency. Fallback to intelligent mock if API key absent." | Show code / prompt templates |
 | **8:15** | **Database Design:** "4 JPA entities with auto-DDL. H2 for dev, PostgreSQL via env vars for production. JSON columns store flexible analysis data. User email as foreign key." | Show ER diagram / table list |
 | **8:45** | **Testing & Quality:** "28 unit tests across AuthService and CareerAiService. Mockito mocks for repositories and Gemini. Frontend builds in 680ms with zero warnings." | Show test results |
-| **9:15** | **Deployment:** "Docker compose for local. Railway one-click deploy with auto-detected Spring Boot and PostgreSQL. All env vars configurable." | Show docker-compose.yml |
+| **9:15** | **Deployment:** "Docker compose for local. Frontend on Vercel, backend on Render with PostgreSQL. All env vars configurable." | Show docker-compose.yml |
 | **9:30** | **Closing:** "CareerCompass AI turns career readiness from guesswork into a quantified, actionable journey. One platform. Seven modules. 48 hours. Thank you!" | — |
 | **10:00** | Q&A | — |
 

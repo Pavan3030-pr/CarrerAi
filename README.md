@@ -83,7 +83,7 @@
 - **📂 File Upload** — Upload .txt, .pdf, .doc, .docx for resume analysis
 - **⚡ Intelligent Fallback** — Works without Gemini API key using smart mock logic
 - **🐳 Docker Deploy** — One-command startup with PostgreSQL
-- **☁️ Cloud Ready** — Deploy to Railway with auto-detected Spring Boot + PostgreSQL
+- **☁️ Cloud Ready** — Deploy frontend to Vercel, backend to Render with PostgreSQL
 
 ---
 
@@ -567,20 +567,38 @@ docker compose up --build
 | `backend` | 8080 | Spring Boot API |
 | `frontend` | 5173 | React + Vite served via Nginx |
 
-### Railway (Cloud)
+### Vercel (Frontend)
 
-Deploy the full stack with PostgreSQL:
+Deploy the React + Vite frontend to [Vercel](https://vercel.com):
 
-1. Create account at [Railway.app](https://railway.app)
-2. Click **+ New → Database → PostgreSQL**
-3. Click **+ New → GitHub Repo → Select `CarrerAi`**
-4. Railway auto-detects Spring Boot from `pom.xml`
-5. Add environment variables:
-   - `GEMINI_API_KEY` — (optional)
-   - `CORS_ALLOWED_ORIGINS` — Your frontend URL
-   - `JWT_SECRET` — Random secret string
-6. PostgreSQL `DATABASE_URL` auto-connected
-7. Deploy!
+1. Push your repo to GitHub
+2. Go to [Vercel](https://vercel.com) → **Add New Project** → Import your GitHub repo
+3. Set **Root Directory** to `frontend`
+4. Set **Build Command** to `npm install && npm run build`
+5. Set **Output Directory** to `dist`
+6. Add environment variable:
+   - `VITE_API_BASE_URL` — Your Render backend URL (e.g. `https://your-app.onrender.com/api`)
+7. Click **Deploy**
+
+### Render (Backend + PostgreSQL)
+
+Deploy the Spring Boot backend with PostgreSQL to [Render](https://render.com):
+
+1. Go to [Render](https://render.com) → **New +** → **PostgreSQL**
+2. Note the **Internal Database URL** and credentials
+3. Go to **New +** → **Web Service** → Connect your GitHub repo
+4. Set **Root Directory** to `backend`
+5. Set **Build Command** to `cd backend && mvn clean package -DskipTests` (or use `./mvnw clean package -DskipTests` from the repo root if you include the Maven wrapper)
+6. Set **Start Command** to `java -jar backend/target/*.jar` if root is repo root, or `java -jar target/*.jar` if root is `backend`
+7. Add environment variables:
+   - `DATABASE_URL` — Your Render PostgreSQL Internal URL
+   - `JDBC_DATABASE_DRIVER` — `org.postgresql.Driver`
+   - `JPA_DIALECT` — `org.hibernate.dialect.PostgreSQLDialect`
+   - `CORS_ALLOWED_ORIGINS` — Your Vercel frontend URL
+   - `GEMINI_API_KEY` — (optional) Your Gemini API key
+   - `JWT_SECRET` — A random secret string
+8. Click **Create Web Service**
+9. Once deployed, copy the backend URL and update `VITE_API_BASE_URL` in your Vercel project settings
 
 ### Environment Variables
 
@@ -649,7 +667,6 @@ CarrerAi/
 ├── submission/                        # Submission package
 │   └── final-submission-checklist.md
 ├── docker-compose.yml                 # PostgreSQL + Backend + Frontend
-├── railway.json                       # Railway deployment config
 ├── .env.example                       # Environment variables template
 └── README.md                          # This file
 ```
@@ -670,7 +687,7 @@ CarrerAi/
 >
 > **Built in 48 hours** with Java 21, Spring Boot 3.5, React 19, and Google Gemini AI.
 > **Database-backed** with JPA (H2/PostgreSQL), JWT-secured with BCrypt.
-> **Dockerized** and **cloud-ready** for Railway deployment.
+> **Dockerized** and **cloud-ready** — frontend on Vercel, backend on Render.
 
 ---
 

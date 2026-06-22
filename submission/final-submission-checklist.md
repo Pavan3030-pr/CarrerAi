@@ -53,7 +53,8 @@
 - [x] Backend runs locally (mvn spring-boot:run)
 - [x] Frontend runs locally (npm run dev)
 - [x] Docker compose works (docker compose up --build)
-- [x] Railway configuration (railway.json)
+- [x] Frontend deploys to Vercel
+- [x] Backend deploys to Render with PostgreSQL
 - [x] PostgreSQL configuration ready
 
 ### Testing
@@ -118,7 +119,7 @@
 | All modules functional | ✅ 7/7 modules work end-to-end |
 | Documentation | ✅ Technical, API, deployment, demo |
 | Presentation | ✅ Slide deck, PDF, demo scripts |
-| Deployment | ✅ Docker, Railway, PostgreSQL ready |
+| Deployment | ✅ Docker, Vercel + Render, PostgreSQL ready |
 | Code quality | ✅ Clean architecture, no dead code |
 
 ---
@@ -155,14 +156,14 @@
 | 6 | Submission Checklist | `submission/final-submission-checklist.md` | Markdown |
 | 7 | Screenshots | `screenshots/` | PNG |
 | 8 | Presentation | `presentation/CareerCompassAI_Presentation.pptx` | PPTX |
-| 9 | Deployment Config | `railway.json`, `docker-compose.yml` | JSON/YAML |
+| 9 | Deployment Config | `docker-compose.yml` | YAML |
 
 ---
 
 ## 🔗 Links
 
 - **GitHub Repository:** https://github.com/Pavan3030-pr/CarrerAi
-- **Live Demo (Railway):** [Deploy to Railway](https://railway.app)
+- **Live Demo:** Deploy frontend to [Vercel](https://vercel.com), backend to [Render](https://render.com)
 - **Documentation:** `/docs/TECHNICAL_DOCUMENTATION.md`
 - **Architecture Diagram:** `/docs/architecture-diagram.svg`
 

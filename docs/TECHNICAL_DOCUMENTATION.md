@@ -677,11 +677,11 @@ docker compose up --build
 ```
 Services: `db` (PostgreSQL 16), `backend` (Spring Boot), `frontend` (Nginx)
 
-### Cloud (Railway)
-- **Auto-detection:** Railway detects `pom.xml` and `package.json`
-- **PostgreSQL:** One-click database provisioning
-- **Environment variables:** All configurable via Railway dashboard
-- **Auto-deploy:** GitHub-connected deploys on push
+### Cloud (Vercel + Render)
+- **Frontend (Vercel):** Connect GitHub repo, set root to `frontend`, build command `npm install && npm run build`
+- **Backend (Render):** Web service connected to GitHub, build command `./mvnw clean package -DskipTests`, start command `java -jar target/*.jar`
+- **Database (Render PostgreSQL):** One-click provisioning, Internal Database URL auto-connected
+- **Environment variables:** All configurable via Vercel and Render dashboards
 
 ---
 
@@ -734,7 +734,7 @@ CareerCompass AI is a **production-ready hackathon submission** that addresses a
 ✅ **Secure** — JWT auth, BCrypt hashing, input validation  
 ✅ **Database-backed** — JPA with H2/PostgreSQL  
 ✅ **Tested** — 28 unit tests, clean frontend build  
-✅ **Deployable** — Docker compose, Railway-ready  
+✅ **Deployable** — Docker Compose, Vercel + Render ready  
 ✅ **Judge-ready** — Demo mode, admin dashboard, comprehensive documentation  
 
 ### Technical Highlights
