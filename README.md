@@ -263,6 +263,82 @@ cd backend && mvn test
 cd frontend && npm run build
 ```
 
+## ☁️ Deploy to Railway (Cloud)
+
+Deploy the full stack (Spring Boot + React + PostgreSQL) to [Railway](https://railway.app) in minutes with a free tier.
+
+### One-Click Deploy
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/your-template-url)
+
+### Manual Deploy Steps
+
+#### Prerequisites
+- A [Railway](https://railway.app) account (free tier works)
+- Your project pushed to a GitHub repository
+
+#### Step 1: Add PostgreSQL Database
+
+1. In your Railway dashboard, click **+ New** → **Database** → **PostgreSQL**
+2. Wait for the database to provision (takes ~30 seconds)
+3. Click on the database to see the **Variables** tab — Railway auto-creates all Postgres connection vars
+
+#### Step 2: Deploy Backend Service
+
+1. Click **+ New** → **GitHub Repo** → Select `CarrerAi`
+2. Railway auto-detects the Spring Boot project from `pom.xml`
+3. Set these environment variables in the Railway dashboard:
+
+   | Variable | Value |
+   |----------|-------|
+   | `PORT` | `8080` |
+   | `CORS_ALLOWED_ORIGINS` | Your Railway frontend URL (see Step 3) |
+   | `GEMINI_API_KEY` | Your Google Gemini API key (optional) |
+   | `JWT_SECRET` | A random secret string |
+
+4. Railway automatically connects `DATABASE_URL` from the PostgreSQL service
+5. Click **Deploy**
+
+#### Step 3: Deploy Frontend Service
+
+1. In the same Railway project, click **+ New** → **GitHub Repo** → Select your repo again
+2. Railway detects the Vite/React project from `package.json`
+3. Set the `RAILWAY_STATIC_FRONTEND` root directory to `frontend`
+4. Set the build command:
+   ```
+   cd frontend && npm install && npm run build
+   ```
+5. Set the start command:
+   ```
+   cd frontend && npx serve -s dist -l $PORT
+   ```
+6. Set environment variable:
+
+   | Variable | Value |
+   |----------|-------|
+   | `VITE_API_BASE_URL` | `https://your-backend-url.railway.app/api` |
+
+7. Click **Deploy**
+
+#### Step 4: Update CORS
+
+After both services are deployed, update the backend's `CORS_ALLOWED_ORIGINS` env var with your frontend's Railway URL.
+
+### Alternative: Render Deploy
+
+1. Create a [Render](https://render.com) account
+2. Create a **PostgreSQL** database from the Render dashboard
+3. Create a **Web Service** for the backend:
+   - Build Command: `cd backend && ./mvnw clean package -DskipTests`
+   - Start Command: `java -jar backend/target/*.jar`
+   - Add env vars: `DATABASE_URL` (from your Render Postgres), `CORS_ALLOWED_ORIGINS`, `GEMINI_API_KEY`
+4. Create a **Static Site** for the frontend:
+   - Build Command: `cd frontend && npm install && npm run build`
+   - Publish Directory: `frontend/dist`
+   - Add env var: `VITE_API_BASE_URL` pointing to your backend URL
+
+> 💡 **Tip:** For a hackathon demo, deploy the backend first, note its URL, then configure the frontend with that URL.
+
 ## 🧠 AI Integration
 
 CareerCompass AI integrates with **Google Gemini 2.0 Flash** for intelligent analysis:
@@ -276,7 +352,7 @@ CareerCompass AI integrates with **Google Gemini 2.0 Flash** for intelligent ana
 ### Setting up Gemini
 
 1. Get an API key from [Google AI Studio](https://aistudio.google.com/)
-2. Add it to your `.env` file:
+2. Add it to your Railway/Render dashboard as an environment variable:
    ```
    GEMINI_API_KEY=your_api_key_here
    ```
